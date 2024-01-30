@@ -3,27 +3,34 @@
     import { doc, getDoc, setDoc } from 'firebase/firestore';
     import { onMount } from 'svelte';
     import "../app.css";
-    import type { LayoutData } from './$types';
-	import { authStore } from '../store/store';
+	import { authStore } from '$lib/store/auth.store';
+
+    import { Toast } from '@skeletonlabs/skeleton';
+
+    import { initializeStores } from '@skeletonlabs/skeleton';
+    initializeStores();
     
-    export let data: LayoutData;
-
     onMount(() => {
-        console.log('mounting');
         const unsubscribe = auth.onAuthStateChanged(async user => {
+            console.log('onAuthStateChanged', user);
+
             const currentPath = window.location.pathname
-            if (!user && !["/"].includes(currentPath)) {
-                window.location.href= "/";
+            if (!user && !["/login"].includes(currentPath)) {
+                window.location.href= "/login";
                 return
             }
-
-            if (user && currentPath === "/") {
-                window.location.href = "/buildings"
+            if (user && ["/login"].includes(currentPath)) {
+                window.location.href = "/"
                 return
             }
-
             if (!user) {
                 return
+            } else {
+                authStore.update(curr => {
+                return {
+                    ...curr, user, data: user, loading: false
+                }
+            })
             }
 
             let dataToSetToStore;
@@ -32,9 +39,8 @@
             if (!docSnap.exists()) {
                 const userRef = doc(db, 'user', user.uid);
                 dataToSetToStore = {
-                        email: user?.email,
-                        buildings: [],
-                    }
+                    email: user?.email,
+                }
                 await setDoc(
                     userRef, dataToSetToStore,
                     { merge: true }
@@ -43,14 +49,10 @@
                 const userData = docSnap.data()
                 dataToSetToStore = userData
             }
-            authStore.update(curr => {
-                return {
-                    ...curr, user, data: dataToSetToStore, loading: false
-                }
-            })
         })
         
     })
 </script>
 
+<Toast />
 <slot/>
