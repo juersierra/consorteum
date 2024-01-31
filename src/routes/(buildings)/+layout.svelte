@@ -1,14 +1,15 @@
 <script lang="ts">
   import Loading from '$lib/assets/loading.svg';
-import { authStore } from '$lib/store/auth.store';
+	import { auth } from '$lib/firebase/firebase';
+  import { authStore } from '$lib/store/auth.store';
+  import { buildingsStore } from '$lib/store/buildings.store';
   import { AppBar, AppShell } from '@skeletonlabs/skeleton';
 
   $: loading = $authStore.loading; 
-
+  
   const handleLogout = async () => {
       await authStore.authHandlers.logout()
   }
-
 
 </script>
 

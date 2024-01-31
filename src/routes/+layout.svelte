@@ -1,19 +1,19 @@
 <script lang="ts">
+    import ModalNewBuilding from '$lib/components/buildings/ModalNewBuilding.svelte';
     import { auth, db } from '$lib/firebase/firebase';
+    import { authStore } from '$lib/store/auth.store';
+    import { Modal, Toast, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
     import { doc, getDoc, setDoc } from 'firebase/firestore';
     import { onMount } from 'svelte';
     import "../app.css";
-	import { authStore } from '$lib/store/auth.store';
-
-    import { Toast } from '@skeletonlabs/skeleton';
-
-    import { initializeStores } from '@skeletonlabs/skeleton';
     initializeStores();
+
+    const modalRegistry: Record<string, ModalComponent> = {
+        newBuildingModal: {ref: ModalNewBuilding}
+    }
     
     onMount(() => {
         const unsubscribe = auth.onAuthStateChanged(async user => {
-            console.log('onAuthStateChanged', user);
-
             const currentPath = window.location.pathname
             if (!user && !["/login"].includes(currentPath)) {
                 window.location.href= "/login";
@@ -28,7 +28,7 @@
             } else {
                 authStore.update(curr => {
                 return {
-                    ...curr, user, data: user, loading: false
+                    ...curr, user, loading: false
                 }
             })
             }
@@ -55,4 +55,5 @@
 </script>
 
 <Toast />
+<Modal components={modalRegistry}/>
 <slot/>

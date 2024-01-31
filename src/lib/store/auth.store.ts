@@ -2,11 +2,19 @@ import { auth } from '$lib/firebase/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { writable } from 'svelte/store';
 
+interface User {
+	id: string;
+	email: string;
+}
+interface Store {
+	loading: boolean;
+	user: User | null;
+}
+
 const store = () => {
-	const { subscribe, update, set } = writable({
+	const { subscribe, update, set } = writable<Store>({
 		user: null,
-		loading: true,
-		data: {}
+		loading: true
 	});
 
 	const authHandlers = {
@@ -15,8 +23,8 @@ const store = () => {
 				.then((userCredential) => {
 					const user = userCredential.user;
 					update((val) => {
-						val.data = user;
-						return val;
+						val.user = user;
+						return { ...val, loading: false };
 					});
 				})
 				.catch((error) => {
@@ -28,8 +36,8 @@ const store = () => {
 				.then((userCredential) => {
 					const user = userCredential.user;
 					update((val) => {
-						val.data = user;
-						return val;
+						val.user = user;
+						return { ...val, loading: false };
 					});
 				})
 				.catch((error) => {
@@ -40,8 +48,7 @@ const store = () => {
 			await signOut(auth).then(() => {
 				update((val) => {
 					val.user = null;
-					val.data = {};
-					return val;
+					return { ...val, loading: false };
 				});
 			});
 		}

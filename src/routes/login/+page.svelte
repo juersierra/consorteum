@@ -41,7 +41,7 @@
         toastStore.trigger(t);
         return 
       }
-      goto("/dashboard")
+      goto("/")
     }
   </script>
   

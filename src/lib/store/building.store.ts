@@ -1,43 +1,32 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { collection, doc, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { writable } from 'svelte/store';
 
+export interface Building {
+	id?: string;
+	name: string;
+	address: string;
+}
+interface Store {
+	loading: boolean;
+	data: Building | null;
+}
+
 const store = () => {
-	const { subscribe, update, set } = writable({
+	const { subscribe, update, set } = writable<Store>({
 		loading: true,
-		data: []
+		data: null
 	});
 
 	const buildingHandler = {
-		getBuildings: async () => {
-			const userColl = collection(db, 'user');
-			const userDoc = doc(userColl, auth.currentUser?.uid);
-			const buildings = await getDocs(collection(userDoc, 'buildings'));
-
+		getBuilding: async (building_id: string) => {
+			const buildDoc = doc(db, 'user', auth.currentUser?.uid, 'buildings', building_id);
+			const building = await getDoc(buildDoc);
 			update((val) => {
-				buildings.forEach((building) => {
-					val.data[val.data.length] = building.data();
-				});
-				val.loading = false;
-				return val;
+				val.data = { ...building.data(), id: building.id };
+				return { ...val, loading: false };
 			});
 		}
-		// 	if (!auth.currentUser) throw new Error('Usuario no logueado');
-
-		// 	const userColl = collection(db, 'user');
-
-		// 	const userDoc = doc(userColl, auth.currentUser.uid);
-		// 	update((val) => {
-		// 		val.data = collection(userDoc, 'building');
-		// 		console.log(val.data);
-		// 	});
-		// };
-		// login: async (email: string, pass: string) => {
-		// 	await signInWithEmailAndPassword(auth, email, pass);
-		// },
-		// logout: async () => {
-		// 	await signOut(auth);
-		// }
 	};
 	return { buildingHandler, subscribe, set, update };
 };
