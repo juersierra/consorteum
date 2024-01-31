@@ -3,13 +3,17 @@
     import Nav from '$lib/components/navigation/Nav.svelte';
     import { authStore } from '$lib/store/auth.store';
     import { buildingStore } from '$lib/store/building.store';
-    import { AppBar, AppShell, Drawer, getDrawerStore, initializeStores } from '@skeletonlabs/skeleton';
+    import { AppBar, AppShell, Drawer, getDrawerStore, initializeStores, Modal, type ModalComponent } from '@skeletonlabs/skeleton';
     import { onMount } from 'svelte';
     import type { PageData } from '../$types';
+	import ModalNewResident from '$lib/components/buildings/ModalNewResident.svelte';
     
     export let data: PageData;
 
     initializeStores();
+    const modalRegistry: Record<string, ModalComponent> = {
+        newResidentModal: {ref: ModalNewResident}
+    }
     //SET DRAWER
     const drawerStore = getDrawerStore();
     function drawerOpen(): void {
@@ -24,6 +28,7 @@
 
 </script>
 
+<Modal components={modalRegistry}/>
 <Drawer><Nav building_id={data.building_id}/></Drawer>
 {#if loading}
     <div class="flex h-[calc(100vh-5rem)] w-full flex-col items-center justify-center">

@@ -1,22 +1,16 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte';
-
-	// Stores
 	import { getModalStore } from '@skeletonlabs/skeleton';
-
-	// Props
-	/** Exposes parent props to this component. */
 	export let parent: SvelteComponent;
-
 	const modalStore = getModalStore();
 
 	// Form Data
 	const formData = {
-		name: 'Nombre',
-		address: 'Direccion',
+		name: '',
+		position: '',
+		percentage: {house: 0, park: 0}
 	};
 
-	// We've created a custom submit function to pass the response and close the modal.
 	function onFormSubmit(): void {
 		if ($modalStore[0].response) $modalStore[0].response(formData);
 		modalStore.close();
@@ -37,13 +31,17 @@
 				<input class="input px-2" type="text" bind:value={formData.name} placeholder="Nombre" />
 			</label>
 			<label class="label">
-				<span>Dirección</span>
-				<input class="input px-2" type="text" bind:value={formData.address} placeholder="Dirección" />
+				<span>Departamento</span>
+				<input class="input px-2" type="text" bind:value={formData.position} placeholder="Departamento" />
 			</label>
-			<!-- <label class="label">
-				<span>Email</span>
-				<input class="input px-2" type="email" bind:value={formData.email} placeholder="Enter email address..." />
-			</label> -->
+			<label class="label">
+				<span>Porcentaje Departamento</span>
+				<input class="input px-2" type="number" bind:value={formData.percentage.house} />
+			</label>
+			<label class="label">
+				<span>Porcentaje Estacionamiento</span>
+				<input class="input px-2" type="number" bind:value={formData.percentage.park} />
+			</label>
 		</form>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">

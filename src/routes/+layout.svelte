@@ -1,5 +1,6 @@
 <script lang="ts">
     import ModalNewBuilding from '$lib/components/buildings/ModalNewBuilding.svelte';
+    import ModalNewResident from '$lib/components/buildings/ModalNewResident.svelte';
     import { auth, db } from '$lib/firebase/firebase';
     import { authStore } from '$lib/store/auth.store';
     import { Modal, Toast, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
@@ -9,7 +10,8 @@
     initializeStores();
 
     const modalRegistry: Record<string, ModalComponent> = {
-        newBuildingModal: {ref: ModalNewBuilding}
+        newBuildingModal: {ref: ModalNewBuilding},
+        newResidentModal: {ref: ModalNewResident}
     }
     
     onMount(() => {

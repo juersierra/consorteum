@@ -25,7 +25,6 @@ const store = () => {
 			const buildColl = collection(db, 'user', auth.currentUser?.uid, 'buildings');
 			const buildings = await getDocs(buildColl);
 			update((val: Store) => {
-				console.log('updating');
 				val.data = [];
 				buildings.forEach((building) => {
 					val.data[val.data.length] = { ...building.data(), id: building.id };
@@ -42,22 +41,6 @@ const store = () => {
 			console.log('edificio creado', buildRef);
 			buildingsHandler.getBuildings();
 		}
-		// 	if (!auth.currentUser) throw new Error('Usuario no logueado');
-
-		// 	const userColl = collection(db, 'user');
-
-		// 	const userDoc = doc(userColl, auth.currentUser.uid);
-		// 	update((val) => {
-		// 		val.data = collection(userDoc, 'building');
-		// 		console.log(val.data);
-		// 	});
-		// };
-		// login: async (email: string, pass: string) => {
-		// 	await signInWithEmailAndPassword(auth, email, pass);
-		// },
-		// logout: async () => {
-		// 	await signOut(auth);
-		// }
 	};
 	return { buildingsHandler, subscribe, set, update };
 };
