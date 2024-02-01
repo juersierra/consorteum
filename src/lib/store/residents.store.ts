@@ -40,8 +40,12 @@ const store = () => {
 				residents.forEach((resident) => {
 					val.data[val.data.length] = { ...resident.data(), id: resident.id };
 				});
-				val.total_perc = val.data.reduce(
-					(acc, curr) => acc + curr.percentage.house + curr.percentage.park,
+				val.total_perc = 0;
+				val.data.reduce(
+					(acc, curr) =>
+						acc +
+						(curr.percentage?.house ? curr.percentage.house : 0) +
+						(curr.percentage?.park ? curr.percentage.park : 0),
 					0
 				);
 				return { ...val, loading: false };

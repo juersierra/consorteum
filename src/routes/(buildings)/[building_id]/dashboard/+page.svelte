@@ -3,6 +3,7 @@
 	import { buildingStore } from '$lib/store/building.store';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
+	import { periodStore } from '$lib/store/period.store';
     
     export let data: PageData;
 
@@ -20,6 +21,7 @@
 </div>
 {:else}
     {$buildingStore.data?.name}
+    {JSON.stringify($buildingStore.periods)}
     <div class="flex flex-col min-h-16 ">
         DASHBOARD
         agfpoasjfpo

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { buildingStore } from "$lib/store/building.store";
 	import { getDrawerStore } from "@skeletonlabs/skeleton";
+	import Period from "./Period.svelte";
 
 	export let building_id: string;
 	
@@ -14,7 +15,7 @@
 
 <nav class="list-nav p-4">
 	<ul>
-		<li class="variant-ghost-primary">
+		<li class="variant-ghost-primary rounded-sm">
 			<a on:click={drawerClose} href="/" class="flex flex-row justify-between">
 				<p>{$buildingStore.data ? $buildingStore.data.name : '...' }</p>
 				<svg  viewBox="0 0 1024 1024" class="h-6">
@@ -22,8 +23,10 @@
 				</svg>
 			</a>
 		</li>
-		<li><a on:click={drawerClose} href="/{building_id}/dashboard">Dashboard</a></li>
 		<li><a on:click={drawerClose} href="/{building_id}/residents">Residentes</a></li>
+		<li><a on:click={drawerClose} href="/{building_id}/fixed_bills">Gastos Fijos</a></li>
+		<Period/>
+		<li><a on:click={drawerClose} href="/{building_id}/dashboard">Mes</a></li>
 		<!--<li><a on:click={drawerClose} href="/blog">Blog</a></li>
 		<li><a on:click={drawerClose} href="/contact">Contact</a></li> -->
 	</ul>

@@ -20,8 +20,6 @@ const store = () => {
 
 	const buildingsHandler = {
 		getBuildings: async () => {
-			console.log('gettin bs store');
-
 			const buildColl = collection(db, 'user', auth.currentUser?.uid, 'buildings');
 			const buildings = await getDocs(buildColl);
 			update((val: Store) => {

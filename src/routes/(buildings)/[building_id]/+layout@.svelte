@@ -1,16 +1,18 @@
 <script lang="ts">
     import Loading from '$lib/assets/loading.svg';
+    import ModalPeriod from '$lib/components/modals/ModalPeriod.svelte';
     import ModalResident from '$lib/components/modals/ModalResident.svelte';
     import Nav from '$lib/components/navigation/Nav.svelte';
     import { authStore } from '$lib/store/auth.store';
-    import { AppBar, AppShell, Drawer, getDrawerStore, initializeStores, Modal, type ModalComponent } from '@skeletonlabs/skeleton';
+    import { AppBar, AppShell, Drawer, Modal, Toast, getDrawerStore, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
     import type { PageData } from '../$types';
     
     export let data: PageData;
 
     initializeStores();
     const modalRegistry: Record<string, ModalComponent> = {
-        residentModal: {ref: ModalResident}
+        residentModal: {ref: ModalResident},
+        periodModal: {ref: ModalPeriod}
     }
     //SET DRAWER
     const drawerStore = getDrawerStore();
@@ -27,6 +29,7 @@
 </script>
 
 <Modal components={modalRegistry}/>
+<Toast/>
 <Drawer><Nav building_id={data.building_id}/></Drawer>
 {#if loading}
     <div class="flex h-[calc(100vh-5rem)] w-full flex-col items-center justify-center">
@@ -67,7 +70,7 @@
     <svelte:fragment slot="sidebarLeft">
         <Nav building_id={data.building_id}/>
     </svelte:fragment>
-    <div class="container h-[calc(100vh-5rem)] p-4 md:p-10 space-y-4">
+    <div class="flex flex-col items-center container h-[calc(100vh-5rem)] mx-auto p-4 md:px-10 space-y-4">
         <slot />
     </div>
 	<svelte:fragment slot="pageFooter"></svelte:fragment>
