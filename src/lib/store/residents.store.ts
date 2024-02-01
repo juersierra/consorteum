@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { writable } from 'svelte/store';
 
 export interface Resident {
@@ -23,6 +23,9 @@ const store = () => {
 
 	const residentsHandler = {
 		getResidents: async (building_id: string) => {
+			update((val: Store) => {
+				return { ...val, loading: true };
+			});
 			const residentColl = collection(
 				db,
 				'user',
@@ -54,6 +57,22 @@ const store = () => {
 				'residents'
 			);
 			await addDoc(residentColl, resident);
+			residentsHandler.getResidents(building_id);
+			return;
+		},
+		editResident: async (building_id: string, resident_id: string, resident: Resident) => {
+			const residentDoc = doc(
+				db,
+				'user',
+				auth.currentUser?.uid,
+				'buildings',
+				building_id,
+				'residents',
+				resident_id
+			);
+			await setDoc(residentDoc, resident);
+			residentsHandler.getResidents(building_id);
+			return;
 		}
 	};
 	return { residentsHandler, subscribe, set, update };

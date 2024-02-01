@@ -6,9 +6,14 @@
 
 	// Form Data
 	const formData = {
-		name: '',
-		position: '',
-		percentage: {house: 0, park: 0}
+		id: $modalStore[0].meta.formData.id,
+		name: $modalStore[0].meta.formData.name,
+		position: $modalStore[0].meta.formData.position,
+		percentage: 
+			{
+				house: $modalStore[0].meta.formData.percentage.house,
+				park: $modalStore[0].meta.formData.percentage.park
+			}
 	};
 
 	function onFormSubmit(): void {

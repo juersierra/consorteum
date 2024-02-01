@@ -1,18 +1,16 @@
 <script lang="ts">
     import Loading from '$lib/assets/loading.svg';
+    import ModalResident from '$lib/components/modals/ModalResident.svelte';
     import Nav from '$lib/components/navigation/Nav.svelte';
     import { authStore } from '$lib/store/auth.store';
-    import { buildingStore } from '$lib/store/building.store';
     import { AppBar, AppShell, Drawer, getDrawerStore, initializeStores, Modal, type ModalComponent } from '@skeletonlabs/skeleton';
-    import { onMount } from 'svelte';
     import type { PageData } from '../$types';
-	import ModalNewResident from '$lib/components/buildings/ModalNewResident.svelte';
     
     export let data: PageData;
 
     initializeStores();
     const modalRegistry: Record<string, ModalComponent> = {
-        newResidentModal: {ref: ModalNewResident}
+        residentModal: {ref: ModalResident}
     }
     //SET DRAWER
     const drawerStore = getDrawerStore();
@@ -69,7 +67,7 @@
     <svelte:fragment slot="sidebarLeft">
         <Nav building_id={data.building_id}/>
     </svelte:fragment>
-    <div class="container h-[calc(100vh-5rem)] p-10 space-y-4">
+    <div class="container h-[calc(100vh-5rem)] p-4 md:p-10 space-y-4">
         <slot />
     </div>
 	<svelte:fragment slot="pageFooter"></svelte:fragment>
