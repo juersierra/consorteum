@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { buildingStore } from "$lib/store/building.store";
-	import { getDrawerStore } from "@skeletonlabs/skeleton";
+	import { LightSwitch, getDrawerStore } from "@skeletonlabs/skeleton";
 	import Period from "./Period.svelte";
 
 	export let building_id: string;
@@ -14,7 +14,8 @@
 </script>
 
 <nav class="list-nav p-4">
-	<ul>
+	<div class="md:fixed mt-4 md:mt-0 md:top-7 z-50"><LightSwitch /></div>
+	<ul class="mt-8 md:mt-0">
 		<li class="variant-ghost-primary rounded-sm">
 			<a on:click={drawerClose} href="/" class="flex flex-row justify-between">
 				<p>{$buildingStore.data ? $buildingStore.data.name : '...' }</p>
@@ -27,7 +28,5 @@
 		<li><a on:click={drawerClose} href="/{building_id}/fixed_bills">Gastos Fijos</a></li>
 		<Period/>
 		<li><a on:click={drawerClose} href="/{building_id}/dashboard">Mes</a></li>
-		<!--<li><a on:click={drawerClose} href="/blog">Blog</a></li>
-		<li><a on:click={drawerClose} href="/contact">Contact</a></li> -->
 	</ul>
 </nav>
