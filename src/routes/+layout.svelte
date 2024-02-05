@@ -3,10 +3,12 @@
     import ModalResident from '$lib/components/modals/ModalResident.svelte';
     import { auth, db } from '$lib/firebase/firebase';
     import { authStore } from '$lib/store/auth.store';
-    import { Modal, Toast, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
+    import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
+    import { Modal, Toast, initializeStores, storePopup, type ModalComponent } from '@skeletonlabs/skeleton';
     import { doc, getDoc, setDoc } from 'firebase/firestore';
     import { onMount } from 'svelte';
     import "../app.css";
+    storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
     initializeStores();
 
     const modalRegistry: Record<string, ModalComponent> = {

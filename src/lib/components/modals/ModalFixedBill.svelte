@@ -1,24 +1,21 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { SlideToggle, getModalStore } from '@skeletonlabs/skeleton';
 	export let parent: SvelteComponent;
 	const modalStore = getModalStore();
 
 	// Form Data
 	const formData = {
 		id: $modalStore[0].meta.formData.id,
-		name: $modalStore[0].meta.formData.name,
-		position: $modalStore[0].meta.formData.position,
-		percentage: 
-			{
-				house: $modalStore[0].meta.formData.percentage.house,
-				park: $modalStore[0].meta.formData.percentage.park
-			}
+		vendor: $modalStore[0].meta.formData.vendor,
+		description: $modalStore[0].meta.formData.description,
+		is_percentage: $modalStore[0].meta.formData.is_percentage
 	};
 
 	function onFormSubmit(): void {
 		if ($modalStore[0].response) $modalStore[0].response(formData);
 		modalStore.close();
+		
 	}
 
 </script>
@@ -30,21 +27,14 @@
 		<!-- Enable for debugging: -->
 		<form class="modal-form border border-surface-500 p-4 space-y-4 rounded-container-token">
 			<label class="label">
-				<span>Nombre</span>
-				<input class="input px-2" type="text" bind:value={formData.name} placeholder="Nombre" />
+				<span>Proveedor</span>
+				<input class="input px-2" type="text" bind:value={formData.vendor} placeholder="Proveedor" />
 			</label>
 			<label class="label">
-				<span>Departamento</span>
-				<input class="input px-2" type="text" bind:value={formData.position} placeholder="Departamento" />
+				<span>Descripción</span>
+				<input class="input px-2" type="text" bind:value={formData.description} placeholder="Descripción" />
 			</label>
-			<label class="label">
-				<span>Porcentaje Departamento</span>
-				<input class="input px-2" type="number" bind:value={formData.percentage.house} />
-			</label>
-			<label class="label">
-				<span>Porcentaje Estacionamiento</span>
-				<input class="input px-2" type="number" bind:value={formData.percentage.park} />
-			</label>
+			<SlideToggle name="is_percentage" bind:checked={formData.is_percentage}>Es Porcentual?</SlideToggle>
 		</form>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">

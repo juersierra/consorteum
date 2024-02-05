@@ -2,6 +2,7 @@
 	import { buildingStore } from "$lib/store/building.store";
 	import { LightSwitch, getDrawerStore } from "@skeletonlabs/skeleton";
 	import Period from "./Period.svelte";
+	import { page } from "$app/stores";
 
 	export let building_id: string;
 	
@@ -9,14 +10,15 @@
 	function drawerClose(): void {
 		drawerStore.close();
 	}
+	$: [navPlace] = $page.url.pathname.split('/').slice(-1)
 	
 
 </script>
 
 <nav class="list-nav p-4">
-	<div class="md:fixed mt-4 md:mt-0 md:top-7 z-50"><LightSwitch /></div>
-	<ul class="mt-8 md:mt-0">
-		<li class="variant-ghost-primary rounded-sm">
+	<div class="lg:fixed mt-4 lg:mt-0 lg:top-7 z-50"><LightSwitch /></div>
+	<ul class="mt-8 lg:mt-0">
+		<li class="variant-ghost-primary rounded-sm ring-4 py-1">
 			<a on:click={drawerClose} href="/" class="flex flex-row justify-between">
 				<p>{$buildingStore.data ? $buildingStore.data.name : '...' }</p>
 				<svg  viewBox="0 0 1024 1024" class="h-6">
@@ -24,9 +26,9 @@
 				</svg>
 			</a>
 		</li>
-		<li><a on:click={drawerClose} href="/{building_id}/residents">Residentes</a></li>
-		<li><a on:click={drawerClose} href="/{building_id}/fixed_bills">Gastos Fijos</a></li>
+		<li class='{navPlace == 'residents' ? 'variant-ghost-tertiary' : 'variant-ghost-primary'} rounded-sm ring-0'><a on:click={drawerClose} href="/{building_id}/residents">Residentes</a></li>
+		<li class="{navPlace == 'fixed_bills' ? 'variant-ghost-tertiary' : 'variant-ghost-primary'} rounded-sm ring-0"><a on:click={drawerClose} href="/{building_id}/fixed_bills">Gastos Fijos</a></li>
 		<Period/>
-		<li><a on:click={drawerClose} href="/{building_id}/dashboard">Mes</a></li>
+		<li class="{navPlace == 'bills' ? 'variant-ghost-tertiary' : 'variant-ghost-secondary'} rounded-sm ring-0"><a on:click={drawerClose} href="/{building_id}/bills">Gastos</a></li>
 	</ul>
 </nav>

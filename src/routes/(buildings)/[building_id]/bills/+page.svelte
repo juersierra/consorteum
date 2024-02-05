@@ -1,79 +1,40 @@
 <script lang="ts">
-	import { fixedBillsStore, type FixedBill } from '$lib/store/fixedBills.store';
-	import { getModalStore, getToastStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
-  import type { PageData } from './$types';
-	import { buildingStore } from '$lib/store/building.store';
+    import { periodStore } from '$lib/store/period.store';
+	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+    import type { PageData } from './$types';
 	import { onMount } from 'svelte';
-  const modalStore = getModalStore();
+    import { page } from "$app/stores";
+	import { buildingStore } from '$lib/store/building.store';
     
     export let data: PageData;
 
-    const formData: FixedBill = {
-		id: '',
-	  description: '',
-	  vendor: '',
-    is_percentage: true,
-	};
+    const months = [
+  "ENE",
+  "FEB",
+  "MAR",
+  "ABR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AGO",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DIC"
+];
 
-  const popupHover: PopupSettings = {
+const popupHover: PopupSettings = {
     event: 'hover',
     target: 'popupHover',
     placement: 'bottom'
   }
 
-  const triggerCreateModal = () => {
-		formData.description = '';
-		formData.vendor = '';
-    formData.is_percentage = true;
-		modalStore.trigger(newFixedBillModal);
-	}
-
-  const newFixedBillModal: ModalSettings = {
-    type: 'component',
-    component: 'fixedBillModal',
-    title: 'Nuevo gasto fijo',
-    body: 'Ingrese los datos del gasto fijo',
-    meta: {	formData },
-    response: (r: FixedBill) => {
-      formData.id = ''
-      formData.description = '';
-      formData.vendor = '';
-      formData.is_percentage = true;
-			if(!r) return
-			const {id, ...fixedBill} = r
-			fixedBillsStore.fixedBillsHandler.addFixedBill(data.building_id, fixedBill);
-		},
-  };
-
-	const triggerEditModal = (fixedBill: FixedBill) => {
-		formData.id = fixedBill.id
-		formData.description = fixedBill.description;
-		formData.vendor = fixedBill.vendor;
-    formData.is_percentage = fixedBill.is_percentage;
-		modalStore.trigger(editFixedBillModal);
-	}
-		
-	const editFixedBillModal : ModalSettings = {
-		type: 'component',
-		component: 'fixedBillModal',
-		title: 'Editar gasto fijo',
-		body: 'Modifique el gasto fijo',
-		meta: {	formData },
-		response: (r: FixedBill) => {
-			if(!r) return
-			const {id, ...fixedBill} = r
-			fixedBillsStore.fixedBillsHandler.editFixedBill(data.building_id, id, fixedBill);
-		},
-	}
-
-  onMount(async ()=> {
-      await buildingStore.buildingHandler.getBuilding(data.building_id)
-      await fixedBillsStore.fixedBillsHandler.getFixedBills(data.building_id)
-  })
-
+    onMount(() => {
+        buildingStore.buildingHandler.getBuilding($page.params.building_id)
+    })
 </script>
 
-{#if $fixedBillsStore.loading}
+{#if $periodStore.loading}
 <section class="card w-full">
     <div class="p-4 space-y-4">
         <div class="placeholder animate-pulse p-8" />
@@ -96,8 +57,9 @@
 </section>
 {:else}
 <div class="flex flex-row justify-between w-full">
-	<h1 class="h1 align-middle p-2">Gastos Fijos</h1>
-	<button class="btn variant-ghost-primary font-bold" on:click={() => triggerCreateModal()}>
+	<h1 class="h1 align-middle p-2">Gastos de {months[$periodStore.data?.month-1]}/{$periodStore.data?.year}</h1>
+    <!-- on:click={() => triggerCreateModal()} -->
+	<button class="btn variant-ghost-primary font-bold" >
     <p class="hidden md:block invisible md:visible mr-2">Agregar Gasto</p>
 		<svg viewBox="0 0 56 56" class="w-8 h-8 !ml-0">
 			<path fill="currentColor" d="M46.867 9.262c-2.39-2.39-5.765-2.766-9.75-2.766H18.836c-3.937 0-7.312.375-9.703 2.766c-2.39 2.39-2.742 5.742-2.742 9.656v18.094c0 4.008.351 7.336 2.742 9.726c2.39 2.39 5.766 2.766 9.773 2.766h18.211c3.985 0 7.36-.375 9.75-2.766c2.391-2.39 2.742-5.718 2.742-9.726V18.988c0-4.008-.351-7.36-2.742-9.726m-1.031 9.07v19.313c0 2.437-.305 4.921-1.71 6.351c-1.43 1.406-3.962 1.734-6.376 1.734h-19.5c-2.414 0-4.945-.328-6.351-1.734c-1.43-1.43-1.735-3.914-1.735-6.352V18.403c0-2.46.305-4.992 1.711-6.398c1.43-1.43 3.984-1.734 6.445-1.734h19.43c2.414 0 4.945.328 6.375 1.734c1.406 1.43 1.711 3.914 1.711 6.328M28 40.504c.938 0 1.688-.727 1.688-1.664v-9.164h9.164c.937 0 1.687-.797 1.687-1.664c0-.914-.75-1.688-1.687-1.688h-9.164v-9.187c0-.938-.75-1.664-1.688-1.664a1.64 1.64 0 0 0-1.664 1.664v9.187h-9.164c-.938 0-1.688.774-1.688 1.688c0 .867.75 1.664 1.688 1.664h9.164v9.164c0 .937.727 1.664 1.664 1.664" />
@@ -109,8 +71,8 @@
     <thead>
       <tr>
         <th class="!p-2 md:p-4 text-center">Proveedor</th>
-				<th class="!p-2 md:p-4 text-center" colspan="2">Descripción</th>
-				<th class="!p-2 md:p-4 text-center flex justify-center gap-x-1" use:popup={popupHover}>
+		<th class="!p-2 md:p-4 text-center" colspan="2">Descripción</th>
+		<th class="!p-2 md:p-4 text-center flex justify-center gap-x-1" use:popup={popupHover}>
             Es Porcentual?
             <svg width="16" height="16" viewBox="0 0 48 48">
               <g fill="none">
@@ -121,16 +83,23 @@
               </g>
             </svg>
         </th>
-			</tr>
-		</thead>
-		<tbody>
-      {#each $fixedBillsStore.data as fixedBill}
-        <tr class="" on:click={() => triggerEditModal(fixedBill)}>
-          <td class="!p-2 md:p-4 text-center !align-middle !text-lg">{fixedBill.vendor}</td>
-          <td class="!p-2 md:p-4 text-center !align-middle !text-lg" colspan="2">{fixedBill.description}</td>
+        <th class="!p-2 md:p-4 text-center">Monto</th>
+      </tr>
+	</thead>
+    {#if !Array.isArray($periodStore.data?.bills) || $periodStore.data?.bills.length == 0}
+    <tr><td colspan="5" class="text-center font-bold !p-2 md:p-4">
+        No hay gastos (aún!)
+    </td></tr>
+    {:else}
+    <tbody>
+      {#each $periodStore.data.bills as bill}
+      <!-- on:click={() => triggerEditModal(fixedBill)} -->
+        <tr class="">
+          <td class="!p-2 md:p-4 text-center !align-middle !text-lg">{bill.vendor}</td>
+          <td class="!p-2 md:p-4 text-center !align-middle !text-lg" colspan="2">{bill.description}</td>
           <td class="!p-2 md:p-4 flex justify-center">
             <!-- <SlideToggle name="is_percentage" active="bg-primary-500" size="sm" checked={fixedBill.is_percentage} disabled /> -->
-            {#if fixedBill.is_percentage}
+            {#if bill.is_percentage}
             <svg class="h-8 text-success-500" viewBox="0 0 24 24">
               <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m-2 15l-5-5l1.41-1.41L10 14.17l7.59-7.59L19 8z" />
             </svg>
@@ -140,14 +109,27 @@
             </svg>
             {/if}
           </td>
+          <td class="!p-2 md:p-4 text-center !align-middle !text-lg">
+            {bill.amount}
+          </td>
         </tr>
-			{/each}
-		</tbody>
+		{/each}
+    </tbody>
+        <tfoot>
+			<tr>
+                <td/>
+				<th class="text-end">Total porcentual</th>
+				<td class="font-bold text-center">$10.000</td>
+                <th class="text-end">Total NO porcentual</th>
+				<td class="font-bold text-center">$10.000</td>
+			</tr>
+		</tfoot>
+    {/if}
 	</table>
 </div>
 {/if}
 
 <div class="!m-0 card p-4 variant-glass-secondary w-[240px]" data-popup="popupHover">
 	<p><b>Porcentual:</b> se dividirá segun el porcentaje de m2 de cada residente.</p>
-  <p>Si no, se dividirá igualmente para cada residente.</p>
+  <p>Si no se dividirá igualmente para cada residente.</p>
 </div>

@@ -26,7 +26,7 @@ const store = () => {
 			update((val: Store) => {
 				return { ...val, loading: true };
 			});
-			const residentColl = collection(
+			const residentsColl = collection(
 				db,
 				'user',
 				auth.currentUser?.uid,
@@ -34,14 +34,13 @@ const store = () => {
 				building_id,
 				'residents'
 			);
-			const residents = await getDocs(residentColl);
+			const residents = await getDocs(residentsColl);
 			update((val: Store) => {
 				val.data = [];
 				residents.forEach((resident) => {
 					val.data[val.data.length] = { ...resident.data(), id: resident.id };
 				});
-				val.total_perc = 0;
-				val.data.reduce(
+				val.total_perc = val.data.reduce(
 					(acc, curr) =>
 						acc +
 						(curr.percentage?.house ? curr.percentage.house : 0) +
@@ -52,7 +51,7 @@ const store = () => {
 			});
 		},
 		addResident: async (building_id: string, resident: Resident) => {
-			const residentColl = collection(
+			const residentsColl = collection(
 				db,
 				'user',
 				auth.currentUser?.uid,
@@ -60,11 +59,15 @@ const store = () => {
 				building_id,
 				'residents'
 			);
-			await addDoc(residentColl, resident);
+			await addDoc(residentsColl, resident);
 			residentsHandler.getResidents(building_id);
 			return;
 		},
-		editResident: async (building_id: string, resident_id: string, resident: Resident) => {
+		editResident: async (
+			building_id: string,
+			resident_id: string | undefined,
+			resident: Resident
+		) => {
 			const residentDoc = doc(
 				db,
 				'user',

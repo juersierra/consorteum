@@ -6,13 +6,15 @@
     import { authStore } from '$lib/store/auth.store';
     import { AppBar, AppShell, Drawer, Modal, Toast, getDrawerStore, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
     import type { PageData } from '../$types';
+	import ModalFixedBill from '$lib/components/modals/ModalFixedBill.svelte';
     
     export let data: PageData;
 
     initializeStores();
     const modalRegistry: Record<string, ModalComponent> = {
         residentModal: {ref: ModalResident},
-        periodModal: {ref: ModalPeriod}
+        periodModal: {ref: ModalPeriod},
+        fixedBillModal: {ref: ModalFixedBill}
     }
     //SET DRAWER
     const drawerStore = getDrawerStore();
@@ -70,7 +72,7 @@
     <svelte:fragment slot="sidebarLeft">
         <Nav building_id={data.building_id}/>
     </svelte:fragment>
-    <div class="flex flex-col items-center container h-[calc(100vh-5rem)] mx-auto p-4 md:px-10 space-y-4">
+    <div class="flex flex-col items-center container h-[calc(100vh-5rem)] mx-auto p-4 lg:px-10 space-y-4">
         <slot />
     </div>
 	<svelte:fragment slot="pageFooter"></svelte:fragment>
