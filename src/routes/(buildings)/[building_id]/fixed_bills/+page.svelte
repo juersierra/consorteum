@@ -66,6 +66,18 @@
 		},
 	}
 
+  const triggerDeleteModal = (fixedBill_id:string) => {
+    const modal: ModalSettings = {
+      type: 'confirm',
+      title: 'Por favor confirme',
+      body: '¿Esta seguro que desea eliminar el gasto fijo?',
+      response: (r) => {
+        if (r) fixedBillsStore.fixedBillsHandler.deleteFixedBill(data.building_id, fixedBill_id);
+      }
+  }
+  modalStore.trigger(modal)
+}
+
   onMount(async ()=> {
       await buildingStore.buildingHandler.getBuilding(data.building_id)
       await fixedBillsStore.fixedBillsHandler.getFixedBills(data.building_id)
@@ -109,7 +121,7 @@
     <thead>
       <tr>
         <th class="!p-2 md:p-4 text-center">Proveedor</th>
-				<th class="!p-2 md:p-4 text-center" colspan="2">Descripción</th>
+				<th class="!p-2 md:p-4 text-center">Descripción</th>
 				<th class="!p-2 md:p-4 text-center flex justify-center gap-x-1" use:popup={popupHover}>
             Es Porcentual?
             <svg width="16" height="16" viewBox="0 0 48 48">
@@ -121,13 +133,14 @@
               </g>
             </svg>
         </th>
+        <th/>
 			</tr>
 		</thead>
 		<tbody>
       {#each $fixedBillsStore.data as fixedBill}
-        <tr class="" on:click={() => triggerEditModal(fixedBill)}>
+        <tr class="">
           <td class="!p-2 md:p-4 text-center !align-middle !text-lg">{fixedBill.vendor}</td>
-          <td class="!p-2 md:p-4 text-center !align-middle !text-lg" colspan="2">{fixedBill.description}</td>
+          <td class="!p-2 md:p-4 text-center !align-middle !text-lg">{fixedBill.description}</td>
           <td class="!p-2 md:p-4 flex justify-center">
             <!-- <SlideToggle name="is_percentage" active="bg-primary-500" size="sm" checked={fixedBill.is_percentage} disabled /> -->
             {#if fixedBill.is_percentage}
@@ -139,6 +152,18 @@
               <path fill="currentColor" d="M12 2c5.53 0 10 4.47 10 10s-4.47 10-10 10S2 17.53 2 12S6.47 2 12 2m3.59 5L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z" />
             </svg>
             {/if}
+          </td>
+          <td >
+            <div class="flex flex-row gap-x-2">
+              <button  on:click={() => triggerEditModal(fixedBill)}><svg class="h-8" viewBox="0 0 24 24">
+                <path fill="currentColor" d="m14.06 9l.94.94L5.92 19H5v-.92zm3.6-6c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29m-3.6 3.19L3 17.25V21h3.75L17.81 9.94z" />
+              </svg></button>
+              <button on:click={() => triggerDeleteModal(fixedBill.id)}>
+                <svg class="h-8" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z" />
+                </svg>
+              </button>
+            </div>
           </td>
         </tr>
 			{/each}

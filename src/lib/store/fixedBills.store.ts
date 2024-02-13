@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { addDoc, collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { writable } from 'svelte/store';
 
 export interface FixedBill {
@@ -72,6 +72,20 @@ const store = () => {
 				fixedBill_id
 			);
 			await setDoc(fixedBillDoc, fixedBill);
+			fixedBillsHandler.getFixedBills(building_id);
+			return;
+		},
+		deleteFixedBill: async (building_id: string, fixedBill_id: string | undefined) => {
+			const fixedBillDoc = doc(
+				db,
+				'user',
+				auth.currentUser?.uid,
+				'buildings',
+				building_id,
+				'fixedBills',
+				fixedBill_id
+			);
+			await deleteDoc(fixedBillDoc);
 			fixedBillsHandler.getFixedBills(building_id);
 			return;
 		}

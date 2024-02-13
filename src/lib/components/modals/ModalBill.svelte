@@ -27,17 +27,19 @@
 		<article>{$modalStore[0].body}</article>
 		<!-- Enable for debugging: -->
 		<form class="modal-form border border-surface-500 p-4 space-y-4 rounded-container-token">
-			<label class="label">
-				<span>Proveedor</span>
-				<input class="input px-2" type="text" bind:value={formData.vendor} placeholder="Proveedor" />
-			</label>
+			<div class="flex flex-row gap-x-4">
+				<label class="label">
+					<span>Proveedor</span>
+					<input class="input px-2" type="text" bind:value={formData.vendor} placeholder="Proveedor" />
+				</label>
+				<label class="flex items-center space-x-2 pt-7">
+					<input class="checkbox" type="checkbox" bind:checked={formData.is_percentage} />
+					<p>Gasto Porcentual</p>
+				</label>
+			</div>
 			<label class="label">
 				<span>Descripción</span>
 				<input class="input px-2" type="text" bind:value={formData.description} placeholder="Descripción" />
-			</label>
-			<label class="flex items-center space-x-2">
-				<input class="checkbox" type="checkbox" bind:checked={formData.is_percentage} />
-				<p>Gasto Porcentual</p>
 			</label>
 			<label class="label">
 				<span>Monto</span>
@@ -51,3 +53,15 @@
 		</footer>
 	</div>
 {/if}
+
+<style>
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+				 -webkit-appearance: none;
+					margin: 0;
+	}
+
+	input[type=number] {
+			-moz-appearance: textfield;
+	}
+</style>

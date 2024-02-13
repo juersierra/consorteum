@@ -2,12 +2,13 @@ import { auth, db } from '$lib/firebase/firebase';
 import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import { writable } from 'svelte/store';
 import { periodStore } from './period.store';
+import type Period from '$lib/components/navigation/Period.svelte';
 
 export interface Building {
 	id?: string;
 	name: string;
 	address: string;
-	periods: [];
+	periods: Period[];
 }
 interface Store {
 	loading: boolean;
@@ -47,6 +48,8 @@ const store = () => {
 					val.periods[val.periods.length] = { ...period.data(), id: period.id };
 				});
 				periodStore.periodHandler.getPeriod(building_id, val.periods[0].id, true);
+				console.log('val', val);
+
 				return { ...val, loading: false };
 			});
 		}

@@ -97,7 +97,7 @@ const store = () => {
 			update((val) => {
 				return { ...val, loading: true };
 			});
-			const billRef = doc(
+			const billDoc = doc(
 				db,
 				'user',
 				auth.currentUser?.uid,
@@ -108,7 +108,7 @@ const store = () => {
 				'bills',
 				bill_id
 			);
-			await deleteDoc(billRef);
+			await deleteDoc(billDoc);
 			billsHandler.getBills(building_id, period_id);
 		}
 	};
