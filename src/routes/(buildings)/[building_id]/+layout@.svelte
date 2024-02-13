@@ -7,6 +7,7 @@
     import { AppBar, AppShell, Drawer, Modal, Toast, getDrawerStore, initializeStores, type ModalComponent } from '@skeletonlabs/skeleton';
     import type { PageData } from '../$types';
 	import ModalFixedBill from '$lib/components/modals/ModalFixedBill.svelte';
+	import ModalBill from '$lib/components/modals/ModalBill.svelte';
     
     export let data: PageData;
 
@@ -14,7 +15,8 @@
     const modalRegistry: Record<string, ModalComponent> = {
         residentModal: {ref: ModalResident},
         periodModal: {ref: ModalPeriod},
-        fixedBillModal: {ref: ModalFixedBill}
+        billModal: {ref: ModalBill}, 
+        fixedBillModal: {ref: ModalFixedBill},
     }
     //SET DRAWER
     const drawerStore = getDrawerStore();

@@ -9,7 +9,8 @@
 		id: $modalStore[0].meta.formData.id,
 		vendor: $modalStore[0].meta.formData.vendor,
 		description: $modalStore[0].meta.formData.description,
-		is_percentage: $modalStore[0].meta.formData.is_percentage
+		is_percentage: $modalStore[0].meta.formData.is_percentage,
+		amount: $modalStore[0].meta.formData.amount
 	};
 
 	function onFormSubmit(): void {
@@ -36,9 +37,12 @@
 			</label>
 			<label class="flex items-center space-x-2">
 				<input class="checkbox" type="checkbox" bind:checked={formData.is_percentage} />
-				<p>Option 1</p>
+				<p>Gasto Porcentual</p>
 			</label>
-			<SlideToggle name="is_percentage" active="bg-primary-500" bind:checked={formData.is_percentage}>Es Porcentual?</SlideToggle>
+			<label class="label">
+				<span>Monto</span>
+				<input class="input px-2" type="number" bind:value={formData.amount} />
+			</label>
 		</form>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">

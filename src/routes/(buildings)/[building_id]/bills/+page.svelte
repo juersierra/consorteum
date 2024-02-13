@@ -1,12 +1,22 @@
 <script lang="ts">
-    import { periodStore } from '$lib/store/period.store';
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-    import type { PageData } from './$types';
+  import { periodStore } from '$lib/store/period.store';
+	import { getModalStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
+  import type { PageData } from './$types';
 	import { onMount } from 'svelte';
-    import { page } from "$app/stores";
+  import { page } from "$app/stores";
 	import { buildingStore } from '$lib/store/building.store';
+	import { billsStore, type Bill } from '$lib/store/bills.store';
+  const modalStore = getModalStore();
     
     export let data: PageData;
+
+    const formData: Bill = {
+		id: '',
+	  description: '',
+	  vendor: '',
+    is_percentage: true,
+    amount: 0,
+	};
 
     const months = [
   "ENE",
@@ -29,12 +39,58 @@ const popupHover: PopupSettings = {
     placement: 'bottom'
   }
 
+  const triggerCreateModal = () => {
+		formData.description = '';
+		formData.vendor = '';
+    formData.is_percentage = true;
+		modalStore.trigger(newBillModal);
+	}
+
+  const newBillModal: ModalSettings = {
+    type: 'component',
+    component: 'billModal',
+    title: 'Nuevo gasto',
+    body: 'Ingrese los datos del gasto',
+    meta: {	formData },
+    response: (r: Bill) => {
+      formData.id = ''
+      formData.description = '';
+      formData.vendor = '';
+      formData.is_percentage = true;
+      formData.amount = 0
+			if(!r) return
+			const {id, ...bill} = r
+			billsStore.billsHandler.addBill(data.building_id, $periodStore.data?.id, bill);
+		},
+  };
+
+  const triggerEditModal = (bill: Bill) => {
+		formData.id = bill.id
+		formData.description = bill.description;
+		formData.vendor = bill.vendor;
+    formData.is_percentage = bill.is_percentage;
+		modalStore.trigger(editBillModal);
+	}
+
+  const editBillModal : ModalSettings = {
+		type: 'component',
+		component: 'billModal',
+		title: 'Editar gasto',
+		body: 'Modifique el gasto',
+		meta: {	formData },
+		response: (r: Bill) => {
+			if(!r) return
+			const {id, ...bill} = r
+			billsStore.billsHandler.editBill(data.building_id, $periodStore.data?.id, id, bill);
+		},
+	}
+
     onMount(() => {
         buildingStore.buildingHandler.getBuilding($page.params.building_id)
     })
 </script>
 
-{#if $periodStore.loading}
+{#if $periodStore.loading && $billsStore.loading}
 <section class="card w-full">
     <div class="p-4 space-y-4">
         <div class="placeholder animate-pulse p-8" />
@@ -57,9 +113,8 @@ const popupHover: PopupSettings = {
 </section>
 {:else}
 <div class="flex flex-row justify-between w-full">
-	<h1 class="h1 align-middle p-2">Gastos de {months[$periodStore.data?.month-1]}/{$periodStore.data?.year}</h1>
-    <!-- on:click={() => triggerCreateModal()} -->
-	<button class="btn variant-ghost-primary font-bold" >
+	<h1 class="h1 align-middle p-2">Gastos de {months[$periodStore.data.month-1]}/{$periodStore.data?.year}</h1>
+	<button class="btn variant-ghost-primary font-bold" on:click={() => triggerCreateModal()}>
     <p class="hidden md:block invisible md:visible mr-2">Agregar Gasto</p>
 		<svg viewBox="0 0 56 56" class="w-8 h-8 !ml-0">
 			<path fill="currentColor" d="M46.867 9.262c-2.39-2.39-5.765-2.766-9.75-2.766H18.836c-3.937 0-7.312.375-9.703 2.766c-2.39 2.39-2.742 5.742-2.742 9.656v18.094c0 4.008.351 7.336 2.742 9.726c2.39 2.39 5.766 2.766 9.773 2.766h18.211c3.985 0 7.36-.375 9.75-2.766c2.391-2.39 2.742-5.718 2.742-9.726V18.988c0-4.008-.351-7.36-2.742-9.726m-1.031 9.07v19.313c0 2.437-.305 4.921-1.71 6.351c-1.43 1.406-3.962 1.734-6.376 1.734h-19.5c-2.414 0-4.945-.328-6.351-1.734c-1.43-1.43-1.735-3.914-1.735-6.352V18.403c0-2.46.305-4.992 1.711-6.398c1.43-1.43 3.984-1.734 6.445-1.734h19.43c2.414 0 4.945.328 6.375 1.734c1.406 1.43 1.711 3.914 1.711 6.328M28 40.504c.938 0 1.688-.727 1.688-1.664v-9.164h9.164c.937 0 1.687-.797 1.687-1.664c0-.914-.75-1.688-1.687-1.688h-9.164v-9.187c0-.938-.75-1.664-1.688-1.664a1.64 1.64 0 0 0-1.664 1.664v9.187h-9.164c-.938 0-1.688.774-1.688 1.688c0 .867.75 1.664 1.688 1.664h9.164v9.164c0 .937.727 1.664 1.664 1.664" />
@@ -86,15 +141,14 @@ const popupHover: PopupSettings = {
         <th class="!p-2 md:p-4 text-center">Monto</th>
       </tr>
 	</thead>
-    {#if !Array.isArray($periodStore.data?.bills) || $periodStore.data?.bills.length == 0}
+    {#if !$billsStore.data}
     <tr><td colspan="5" class="text-center font-bold !p-2 md:p-4">
         No hay gastos (aún!)
     </td></tr>
     {:else}
     <tbody>
-      {#each $periodStore.data.bills as bill}
-      <!-- on:click={() => triggerEditModal(fixedBill)} -->
-        <tr class="">
+      {#each $billsStore.data as bill}
+        <tr class="" on:click={() => triggerEditModal(bill)}>
           <td class="!p-2 md:p-4 text-center !align-middle !text-lg">{bill.vendor}</td>
           <td class="!p-2 md:p-4 text-center !align-middle !text-lg" colspan="2">{bill.description}</td>
           <td class="!p-2 md:p-4 flex justify-center">
@@ -112,16 +166,21 @@ const popupHover: PopupSettings = {
           <td class="!p-2 md:p-4 text-center !align-middle !text-lg">
             {bill.amount}
           </td>
+          <!-- <td on:click={() => deleteBill(bill.id)}>
+          </td> -->
         </tr>
 		{/each}
     </tbody>
         <tfoot>
 			<tr>
-                <td/>
-				<th class="text-end">Total porcentual</th>
-				<td class="font-bold text-center">$10.000</td>
-                <th class="text-end">Total NO porcentual</th>
-				<td class="font-bold text-center">$10.000</td>
+        <td/>
+				<td class="text-center text-xl"><span class="text-primary-400">Σ %: </span>${$billsStore.total_percentage}</td>
+				<td class="text-center text-xl"><span class="text-primary-400">Σ NO%: </span>${$billsStore.total_even}</td>
+        <td class="text-center text-xl">TOTAL</td>
+				<td class="font-bold text-center text-xl">${$billsStore.total_percentage+$billsStore.total_even}</td>
+				<!-- <td class="font-bold text-center">${$billsStore.total_percentage}</td>
+        <th class="text-end">Total NO porcentual</th>
+				<td class="font-bold text-center">${$billsStore.total_even}</td> -->
 			</tr>
 		</tfoot>
     {/if}
