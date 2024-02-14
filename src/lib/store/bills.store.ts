@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { collection, doc, getDoc, getDocs, addDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, addDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { writable } from 'svelte/store';
 
 export interface Bill {
@@ -45,9 +45,7 @@ const store = () => {
 				(val.total_percentage = 0),
 					(val.total_even = 0),
 					bills.forEach((bill) => {
-						val.data[val.data.length] = { ...bill.data(), id: bill.id };
-						console.log('filling');
-
+						val.data[val.data.length] = { id: bill.id, ...bill.data() };
 						val.data[val.data.length - 1].is_percentage
 							? (val.total_percentage += val.data[val.data.length - 1].amount)
 							: (val.total_even += val.data[val.data.length - 1].amount);
@@ -72,10 +70,9 @@ const store = () => {
 				),
 				bill
 			);
-			console.log('bill created: ', billRef);
 			billsHandler.getBills(building_id, period_id);
 		},
-		editBill: async (building_id: string, period_id: string, bill_id: number, bill: Bill) => {
+		editBill: async (building_id: string, period_id: string, bill_id: string, bill: Bill) => {
 			update((val) => {
 				return { ...val, loading: true };
 			});
@@ -93,7 +90,7 @@ const store = () => {
 			await setDoc(billDoc, bill);
 			billsHandler.getBills(building_id, period_id);
 		},
-		deleteBill: async (building_id: string, period_id: string, bill_id: number) => {
+		deleteBill: async (building_id: string, period_id: string, bill_id: string) => {
 			update((val) => {
 				return { ...val, loading: true };
 			});

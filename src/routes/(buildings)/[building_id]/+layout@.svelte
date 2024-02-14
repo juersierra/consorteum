@@ -9,12 +9,14 @@
 	import ModalFixedBill from '$lib/components/modals/ModalFixedBill.svelte';
 	import ModalBill from '$lib/components/modals/ModalBill.svelte';
 	import ModalNewPeriod from '$lib/components/modals/ModalNewPeriod.svelte';
+	import ModalCsvDownload from '$lib/components/modals/ModalCsvDownload.svelte';
     
     export let data: PageData;
 
     initializeStores();
     const modalRegistry: Record<string, ModalComponent> = {
         residentModal: {ref: ModalResident},
+        csvModal: {ref: ModalCsvDownload},
         periodModal: {ref: ModalPeriod},
         newPeriodModal: {ref: ModalNewPeriod},
         billModal: {ref: ModalBill}, 

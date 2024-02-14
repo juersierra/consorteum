@@ -48,8 +48,6 @@ const store = () => {
 					val.periods[val.periods.length] = { ...period.data(), id: period.id };
 				});
 				periodStore.periodHandler.getPeriod(building_id, val.periods[0].id, true);
-				console.log('val', val);
-
 				return { ...val, loading: false };
 			});
 		}
