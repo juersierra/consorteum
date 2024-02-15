@@ -1,15 +1,14 @@
 <script lang="ts">
-  import { periodStore } from '$lib/store/period.store';
-	import { getModalStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
-  import type { PageData } from './$types';
-	import { onMount } from 'svelte';
   import { page } from "$app/stores";
-	import { buildingStore } from '$lib/store/building.store';
-	import { billsStore, type Bill } from '$lib/store/bills.store';
-	import DownloadCsv from '$lib/components/buttons/DownloadCSV.svelte';
+  import { billsStore, type Bill } from '$lib/store/bills.store';
+  import { buildingStore } from '$lib/store/building.store';
+  import { periodStore } from '$lib/store/period.store';
+  import { getModalStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
+  import { onMount } from 'svelte';
+  import type { PageData } from './$types';
   const modalStore = getModalStore();
-    
-    export let data: PageData;
+  
+  export let data: PageData;
 
   const formData: Bill = {
 		id: '',
