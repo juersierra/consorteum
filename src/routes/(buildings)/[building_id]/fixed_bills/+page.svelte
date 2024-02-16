@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { fixedBillsStore, type FixedBill } from '$lib/store/fixedBills.store';
-	import { getModalStore, getToastStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
-  import type { PageData } from './$types';
 	import { buildingStore } from '$lib/store/building.store';
+	import { fixedBillsStore, type FixedBill } from '$lib/store/fixedBills.store';
+	import { getModalStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
   const modalStore = getModalStore();
-    
-    export let data: PageData;
 
-    const formData: FixedBill = {
+  export let data: PageData;
+
+  const formData: FixedBill = {
 		id: '',
-	  description: '',
-	  vendor: '',
+    description: '',
+    vendor: '',
     is_percentage: true,
 	};
 
@@ -74,13 +74,13 @@
       response: (r) => {
         if (r) fixedBillsStore.fixedBillsHandler.deleteFixedBill(data.building_id, fixedBill_id);
       }
+    }
+    modalStore.trigger(modal)
   }
-  modalStore.trigger(modal)
-}
 
-  onMount(async ()=> {
-      await buildingStore.buildingHandler.getBuilding(data.building_id)
-      await fixedBillsStore.fixedBillsHandler.getFixedBills(data.building_id)
+  onMount(()=> {
+      buildingStore.buildingHandler.getBuilding(data.building_id)
+      fixedBillsStore.fixedBillsHandler.getFixedBills(data.building_id)
   })
 
 </script>
@@ -158,7 +158,7 @@
               <button  on:click={() => triggerEditModal(fixedBill)}><svg class="h-8" viewBox="0 0 24 24">
                 <path fill="currentColor" d="m14.06 9l.94.94L5.92 19H5v-.92zm3.6-6c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29m-3.6 3.19L3 17.25V21h3.75L17.81 9.94z" />
               </svg></button>
-              <button on:click={() => triggerDeleteModal(fixedBill.id)}>
+              <button on:click={() => triggerDeleteModal(fixedBill.id ? fixedBill.id : '')}>
                 <svg class="h-8" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z" />
                 </svg>

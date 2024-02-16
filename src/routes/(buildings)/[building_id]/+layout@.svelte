@@ -11,7 +11,7 @@
 	import ModalNewPeriod from '$lib/components/modals/ModalNewPeriod.svelte';
 	import ModalCsvDownload from '$lib/components/modals/ModalCsvDownload.svelte';
     
-    export let data: PageData;
+    export let data;
 
     initializeStores();
     const modalRegistry: Record<string, ModalComponent> = {

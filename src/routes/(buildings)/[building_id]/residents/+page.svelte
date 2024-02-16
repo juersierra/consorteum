@@ -34,7 +34,7 @@
 	meta: {	formData },
     response: (r: Resident) => {
 			if(!r) return
-			if (r.percentage.house == 0 || r.percentage.park == 0) {
+			if (r.percentage.house == 0 && r.percentage.park == 0) {
 				const t: ToastSettings = {
 						message: 'No se pude crear un residente con porcentajes 0',
 						background: 'variant-filled-warning'
@@ -117,7 +117,6 @@
 	</button>
 </div>
 <div class="table-container">
-    <!-- Native Table Element -->
 	<table class="table table-hover table-compact">
     <thead>
       <tr>
@@ -138,8 +137,6 @@
 						</div>
 					</div>
 				</th>
-				<!-- <th class="!p-2 md:p-4 text-center">Porcentaje Cochera</th>
-        <th class="!p-2 md:p-4 text-center">Porcentaje Total</th> -->
 			</tr>
 		</thead>
 		<tbody>
@@ -147,9 +144,6 @@
         <tr class="" on:click={() => triggerEditModal(resident)}>
           <td class="!p-2 md:p-4 text-center !align-middle !text-lg">{resident.position}</td>
           <td class="!p-2 md:p-4 text-center !align-middle !text-lg" colspan="2">{resident.name}</td>
-          <!-- <td class="!p-2 md:p-4 text-center">{resident.percentage.house}%</td>
-          <td class="!p-2 md:p-4 text-center">{resident.percentage.park}%</td> -->
-					
           <td class="!p-2 md:p-4 text-center">
 						<div class="flex flex-col !text-lg">
 							<div class="flex flex-row justify-around">

@@ -2,11 +2,13 @@
   import { page } from "$app/stores";
   import { billsStore, type Bill } from '$lib/store/bills.store';
   import { buildingStore } from '$lib/store/building.store';
+  import { fixedBillsStore } from "$lib/store/fixedBills.store";
   import { periodStore } from '$lib/store/period.store';
-  import { getModalStore, popup, type ModalSettings, type PopupSettings } from '@skeletonlabs/skeleton';
+  import { getModalStore, popup, type ModalSettings, type PopupSettings, type ToastSettings, getToastStore } from '@skeletonlabs/skeleton';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   const modalStore = getModalStore();
+  const toastStore = getToastStore();
   
   export let data: PageData;
 
@@ -44,6 +46,7 @@
 		formData.vendor = '';
     formData.is_percentage = true;
 		modalStore.trigger(newBillModal);
+    return
 	}
 
   const newBillModal: ModalSettings = {
@@ -72,6 +75,7 @@
 		formData.vendor = bill.vendor;
     formData.is_percentage = bill.is_percentage;
 		modalStore.trigger(editBillModal);
+    return
 	}
 
   const editBillModal : ModalSettings = {
@@ -90,6 +94,14 @@
 	}
 
   const triggerDeleteModal = (bill_id:string) => {
+    if (bill_id == '') {
+      const t: ToastSettings = {
+          message: 'Contraseña o email invalido',
+          background: 'variant-filled-error',
+        };
+        toastStore.trigger(t);
+      return
+    }
     const modal: ModalSettings = {
       type: 'confirm',
       title: 'Por favor confirme',
@@ -101,10 +113,12 @@
       }
     }
     modalStore.trigger(modal)
+    return
   }
 
   const triggerCreateCSVModal = () => {
 		modalStore.trigger(createCSVModal);
+    return
 	}
 
   const createCSVModal: ModalSettings = {
@@ -123,6 +137,7 @@
 
   onMount(() => {
       buildingStore.buildingHandler.getBuilding($page.params.building_id)
+      fixedBillsStore.fixedBillsHandler.getFixedBills($page.params.building_id)
   })
 
 </script>
@@ -173,7 +188,7 @@
       <tr>
         <th class="!p-2 md:p-4 text-center">Proveedor</th>
         <th class="!p-2 md:p-4 text-center">Descripción</th>
-        <th class="!p-2 md:p-4 text-center flex justify-center gap-x-1" use:popup={popupHover}>
+				<th class="!p-2 md:p-4 text-center flex justify-center gap-x-1" use:popup={popupHover}>
           Es Porcentual?
           <svg width="16" height="16" viewBox="0 0 48 48">
             <g fill="none">
@@ -183,7 +198,7 @@
               <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M21 34H28" />
             </g>
           </svg>
-        </th>
+      </th>
         <th class="!p-2 md:p-4 text-center">Monto</th>
         <th/>
       </tr>
@@ -241,9 +256,8 @@
     {/if}
 	</table>
 </div>
-{/if}
-
 <div class="!m-0 card p-4 variant-glass-secondary w-[240px]" data-popup="popupHover">
-	<p><b>Porcentual:</b> se dividirá segun el porcentaje de m2 de cada residente.</p>
-  <p>Si no se dividirá igualmente para cada residente.</p>
+  <p><b>Porcentual:</b> se dividirá segun el porcentaje de m2 de cada residente.</p>
+  <p>Si no, se dividirá igualmente para cada residente.</p>
 </div>
+{/if}

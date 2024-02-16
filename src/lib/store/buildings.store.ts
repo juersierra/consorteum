@@ -36,6 +36,11 @@ const store = () => {
 				collection(db, 'user', auth.currentUser?.uid, 'buildings'),
 				building
 			);
+			const newPeriod = {
+				month: new Date().getMonth(),
+				year: new Date().getFullYear()
+			};
+			await addDoc(collection(buildRef, 'periods'), newPeriod);
 			console.log('edificio creado', buildRef);
 			buildingsHandler.getBuildings();
 		}
