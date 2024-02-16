@@ -4,6 +4,7 @@
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import type { SvelteComponent } from 'svelte';
 	import DownloadCsv from '../buttons/DownloadCSV.svelte';
+	import { residentsStore } from '$lib/store/residents.store';
 	export let parent: SvelteComponent;
 	const modalStore = getModalStore();
 
@@ -23,17 +24,28 @@
 	};
 
 	const filterForCSVResidents = () => {
-    const totals: {percentage_total: number, even_total: number} = $billsStore.data.reduce((totals, bill) => {
-      if (bill.is_percentage) {
-        totals.percentage_total += bill.amount
-      } else {
-        totals.even_total += bill.amount
+    console.log($billsStore.data.length+1);
+    $residentsStore.data.forEach((resident) => {
+      console.log(resident.percentage.house+resident.percentage.park);
+    })
+    console.log($billsStore.data.length+1);
+    console.log($billsStore.total_percentage);
+    console.log($billsStore.total_even);
+
+    const arr = $residentsStore.data.map((resident) => {
+      return {
+        departamento_cochera: resident.position,
+        nombre: resident.name,
+        porc_depto: resident.percentage.house || '',
+        porc_cochera: resident.percentage.park || '',
+        porc_total: resident.percentage.house+resident.percentage.park || '',
+        total_porcentaje: (resident.percentage.house+resident.percentage.park) * $billsStore.total_percentage / 100 || '',
+        total_equitativo: $billsStore.total_even / ($billsStore.data.length) || '',
+        TOTAL: ''
       }
-    }, {percentage_total: 0, even_total:0})
-    console.log(totals.percentage_total);
-    console.log(totals.even_total);
-    // arr.push({proveedor: '', gasto: '', monto_porcentual: percentage_total, monto_equitativo: even_total, TOTAL: percentage_total+even_total})
-		return
+    })
+    arr.push({departamento_cochera: '', nombre: '', porc_depto: '', porc_cochera: '', porc_total: `=SUMA(E2:E${arr.length+1})`, total_porcentaje:`=SUMA(F2:F${arr.length+1})`, total_equitativo: `=SUMA(G2:G${arr.length+1})`, TOTAL: `=SUMA(F${arr.length+2}:G${arr.length+2})`})
+		return arr as any[]
 	};
 
 	const months = [
@@ -59,7 +71,7 @@
 		<article>{$modalStore[0].body}</article>
 		<div class="flex flex-row justify-around">
 			<DownloadCsv csvData={filterForCSVBills()} filename="Gastos {$periodStore.data ? months[$periodStore.data.month] : ''}/{$periodStore.data?.year}" name="bills"/>
-			<!-- <DownloadCsv csvData={filterForCSVResidents()} filename="Residentes" name="residents"/> -->
+			<DownloadCsv csvData={filterForCSVResidents()} filename="Residentes {$periodStore.data ? months[$periodStore.data.month] : ''}/{$periodStore.data?.year}" name="residents"/>
 		</div>
 		<footer class="modal-footer {parent.regionFooter}">
 			<button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
