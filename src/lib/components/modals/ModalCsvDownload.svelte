@@ -40,7 +40,7 @@
         porc_cochera: resident.percentage.park || '',
         porc_total: resident.percentage.house+resident.percentage.park || '',
         total_porcentaje: (resident.percentage.house+resident.percentage.park) * $billsStore.total_percentage / 100 || '',
-        total_equitativo: $billsStore.total_even / ($billsStore.data.length) || '',
+        total_equitativo: $billsStore.total_even / ($residentsStore.data.length) || '',
         TOTAL: ''
       }
     })

@@ -28,19 +28,15 @@ const store = () => {
 			update((val) => {
 				return { ...val, loading: true };
 			});
-			const buildDoc = doc(db, 'user', auth.currentUser?.uid, 'buildings', building_id);
-			const periodsRef = collection(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'periods'
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const building = await getDoc(buildingDoc);
 			const periods = await getDocs(
-				query(periodsRef, orderBy('year', 'desc'), orderBy('month', 'desc'))
+				query(periodsColl, orderBy('year', 'desc'), orderBy('month', 'desc'))
 			);
-			const building = await getDoc(buildDoc);
 			update((val) => {
 				val.data = { ...building.data(), id: building.id };
 				val.periods = [];

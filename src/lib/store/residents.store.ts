@@ -26,14 +26,11 @@ const store = () => {
 			update((val: Store) => {
 				return { ...val, loading: true };
 			});
-			const residentsColl = collection(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'residents'
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const residentsColl = collection(buildingDoc, 'residents');
 			const residents = await getDocs(residentsColl);
 			update((val: Store) => {
 				val.data = [];
@@ -51,14 +48,11 @@ const store = () => {
 			});
 		},
 		addResident: async (building_id: string, resident: Resident) => {
-			const residentsColl = collection(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'residents'
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const residentsColl = collection(buildingDoc, 'residents');
 			await addDoc(residentsColl, resident);
 			residentsHandler.getResidents(building_id);
 			return;
@@ -68,15 +62,12 @@ const store = () => {
 			resident_id: string | undefined,
 			resident: Resident
 		) => {
-			const residentDoc = doc(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'residents',
-				resident_id
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const residentsColl = collection(buildingDoc, 'residents');
+			const residentDoc = doc(residentsColl, resident_id);
 			await setDoc(residentDoc, resident);
 			residentsHandler.getResidents(building_id);
 			return;
