@@ -4,7 +4,6 @@ Free consortium adminstration. Organized in:
 
 
 User > Buildings >  { Periods > Bills }
-
                     { Residents > * } 
                     
   *On development: Residents accounts.
