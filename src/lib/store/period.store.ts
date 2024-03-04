@@ -26,16 +26,13 @@ const store = () => {
 			update((val: Store) => {
 				return { ...val, loading: true };
 			});
-			const periodRef = doc(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'periods',
-				period_id
-			);
-			const period = await getDoc(periodRef);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const periodDoc = doc(periodsColl, period_id);
+			const period = await getDoc(periodDoc);
 			update((val: Store) => {
 				if ((val.data == undefined && reload) || !reload) {
 					val.data = { ...period.data(), id: period.id };
@@ -45,12 +42,15 @@ const store = () => {
 			});
 		},
 		createPeriod: async (building_id: string, period: Period) => {
-			const periodDoc = await addDoc(
-				collection(db, 'user', auth.currentUser?.uid, 'buildings', building_id, 'periods'),
-				period
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const periodRef = await addDoc( periodsColl, period
 			);
 			buildingStore.buildingHandler.getBuilding(building_id);
-			periodHandler.getPeriod(building_id, periodDoc.id);
+			periodHandler.getPeriod(building_id, periodRef.id);
 		}
 	};
 

@@ -29,16 +29,13 @@ const store = () => {
 			update((val: Store) => {
 				return { ...val, loading: true };
 			});
-			const billsColl = collection(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'periods',
-				period_id,
-				'bills'
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const periodDoc = doc(periodsColl, period_id);
+			const billsColl = collection(periodDoc,'bills');
 			const bills = await getDocs(billsColl);
 			update((val: Store) => {
 				val.data = [];
@@ -57,36 +54,28 @@ const store = () => {
 			update((val) => {
 				return { ...val, loading: true };
 			});
-			const billRef = addDoc(
-				collection(
-					db,
-					'user',
-					auth.currentUser?.uid,
-					'buildings',
-					building_id,
-					'periods',
-					period_id,
-					'bills'
-				),
-				bill
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const periodDoc = doc(periodsColl, period_id);
+			const billsColl = collection(periodDoc,'bills');
+			addDoc(billsColl,bill);
 			billsHandler.getBills(building_id, period_id);
 		},
 		editBill: async (building_id: string, period_id: string, bill_id: string, bill: Bill) => {
 			update((val) => {
 				return { ...val, loading: true };
 			});
-			const billDoc = doc(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'periods',
-				period_id,
-				'bills',
-				bill_id
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const periodDoc = doc(periodsColl, period_id);
+			const billsColl = collection(periodDoc,'bills');
+			const billDoc = doc(billsColl, bill_id);
 			await setDoc(billDoc, bill);
 			billsHandler.getBills(building_id, period_id);
 		},
@@ -94,17 +83,14 @@ const store = () => {
 			update((val) => {
 				return { ...val, loading: true };
 			});
-			const billDoc = doc(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'periods',
-				period_id,
-				'bills',
-				bill_id
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildingsColl = collection(userDoc, 'buildings');
+			const buildingDoc = doc(buildingsColl, building_id);
+			const periodsColl = collection(buildingDoc, 'periods');
+			const periodDoc = doc(periodsColl, period_id);
+			const billsColl = collection(periodDoc,'bills');
+			const billDoc = doc(billsColl, bill_id);
 			await deleteDoc(billDoc);
 			billsHandler.getBills(building_id, period_id);
 		}

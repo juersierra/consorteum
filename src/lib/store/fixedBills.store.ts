@@ -27,14 +27,11 @@ const store = () => {
 			update((val: Store) => {
 				return { ...val, loading: true };
 			});
-			const fixedBillsColl = collection(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'fixedBills'
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildColl = collection(userDoc, 'buildings');
+			const buildDoc = doc(buildColl, building_id);
+			const fixedBillsColl = collection(buildDoc,	'fixedBills');
 			const fixedBills = await getDocs(fixedBillsColl);
 			update((val: Store) => {
 				val.data = [];
@@ -45,15 +42,12 @@ const store = () => {
 			});
 		},
 		addFixedBill: async (building_id: string, fixedBill: FixedBill) => {
-			const fixedBillsCol = collection(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'fixedBills'
-			);
-			await addDoc(fixedBillsCol, fixedBill);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildColl = collection(userDoc, 'buildings');
+			const buildDoc = doc(buildColl, building_id);
+			const fixedBillsColl = collection(buildDoc,	'fixedBills');
+			await addDoc(fixedBillsColl, fixedBill);
 			fixedBillsHandler.getFixedBills(building_id);
 			return;
 		},
@@ -62,29 +56,23 @@ const store = () => {
 			fixedBill_id: string | undefined,
 			fixedBill: FixedBill
 		) => {
-			const fixedBillDoc = doc(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'fixedBills',
-				fixedBill_id
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildColl = collection(userDoc, 'buildings');
+			const buildDoc = doc(buildColl, building_id);
+			const fixedBillsColl = collection(buildDoc,	'fixedBills');
+			const fixedBillDoc = doc(fixedBillsColl,	fixedBill_id);
 			await setDoc(fixedBillDoc, fixedBill);
 			fixedBillsHandler.getFixedBills(building_id);
 			return;
 		},
 		deleteFixedBill: async (building_id: string, fixedBill_id: string | undefined) => {
-			const fixedBillDoc = doc(
-				db,
-				'user',
-				auth.currentUser?.uid,
-				'buildings',
-				building_id,
-				'fixedBills',
-				fixedBill_id
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildColl = collection(userDoc, 'buildings');
+			const buildDoc = doc(buildColl, building_id);
+			const fixedBillsColl = collection(buildDoc,	'fixedBills');
+			const fixedBillDoc = doc(fixedBillsColl,	fixedBill_id);
 			await deleteDoc(fixedBillDoc);
 			fixedBillsHandler.getFixedBills(building_id);
 			return;

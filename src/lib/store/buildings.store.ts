@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs } from 'firebase/firestore';
 import { writable } from 'svelte/store';
 
 export interface Building {
@@ -20,7 +20,9 @@ const store = () => {
 
 	const buildingsHandler = {
 		getBuildings: async () => {
-			const buildColl = collection(db, 'user', auth.currentUser?.uid, 'buildings');
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildColl = collection(userDoc, 'buildings');
 			const buildings = await getDocs(buildColl);
 			update((val: Store) => {
 				val.data = [];
@@ -32,10 +34,10 @@ const store = () => {
 		},
 
 		createBuilding: async (building: Building) => {
-			const buildRef = await addDoc(
-				collection(db, 'user', auth.currentUser?.uid, 'buildings'),
-				building
-			);
+			const userColl = collection(db, 'user');
+			const userDoc = doc(userColl, auth.currentUser?.uid);
+			const buildColl = collection(userDoc, 'buildings');
+			const buildRef = await addDoc(buildColl, building);
 			const newPeriod = {
 				month: new Date().getMonth(),
 				year: new Date().getFullYear()

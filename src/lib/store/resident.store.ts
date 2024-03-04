@@ -47,4 +47,8 @@ const store = () => {
 			});
 		}
 	};
+
+	return { residentHandler, subscribe, set, update } ;
 };
+
+export const periodStore = store();
